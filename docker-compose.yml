@@ -1,0 +1,8 @@
+services:
+  docker-list:
+    image: ghcr.io/jdamner/docker-list:latest
+    ports:
+      - 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped

@@ -1,0 +1,34 @@
+{
+    "name": "jdamner/docker-list",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "DockerList\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "James Amner",
+            "email": "jdamner@me.com"
+        }
+    ],
+    "require": {
+        "beluga-php/docker-php": "^1.45",
+        "symfony/http-client": "^7.4"
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    },
+    "scripts": {
+        "audit-deps": "composer audit --no-interaction",
+        "phpstan": "phpstan analyse --configuration=phpstan.neon --no-progress",
+        "phpcs": "phpcs --standard=phpcs.xml src",
+        "phpcbf": "phpcbf --standard=phpcs.xml src"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^1.12",
+        "squizlabs/php_codesniffer": "^3.10"
+    }
+}
