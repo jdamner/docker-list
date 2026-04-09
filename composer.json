@@ -28,7 +28,7 @@
         "phpcbf": "phpcbf --standard=phpcs.xml src"
     },
     "require-dev": {
-        "phpstan/phpstan": "^1.12",
+        "phpstan/phpstan": "^2.1",
         "squizlabs/php_codesniffer": "^3.10"
     }
 }
