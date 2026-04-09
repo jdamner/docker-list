@@ -5,6 +5,7 @@
   <rule ref="PSR12" />
 
   <file>src</file>
+  <file>index.php</file>
 
   <arg name="basepath" value="."/>
   <arg name="colors"/>

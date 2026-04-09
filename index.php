@@ -2,9 +2,17 @@
 
 require_once ( 'vendor/autoload.php' );
 
+$hostname = isset( $_SERVER['HTTP_HOST'] ) && is_string( $_SERVER['HTTP_HOST'] ) ? 
+    parse_url( $_SERVER['HTTP_HOST'], PHP_URL_HOST ) : 
+    'localhost';
+
+if ( empty( $hostname ) ) {
+    $hostname = 'localhost';
+}
+
 $controller = new DockerList\Controller( 
     \Docker\Docker::create(),
-    parse_url($_SERVER['HTTP_HOST'] ?? '', PHP_URL_HOST) ?: 'localhost'
+    $hostname
 );
 
 $links = $controller->getLinks();

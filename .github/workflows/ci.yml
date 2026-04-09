@@ -33,7 +33,7 @@ jobs:
         run: composer phpcs
 
       - name: Lint Dockerfile
-        uses: hadolint/hadolint-action@v3.1.0
+        uses: hadolint/hadolint-action@v3.3.0
         with:
           dockerfile: Dockerfile
 
@@ -41,7 +41,7 @@ jobs:
         run: docker build -t docker-list:ci .
 
       - name: Scan image for vulnerabilities
-        uses: aquasecurity/trivy-action@0.30.0
+        uses: aquasecurity/trivy-action@0.35.0
         with:
           image-ref: docker-list:ci
           format: table
