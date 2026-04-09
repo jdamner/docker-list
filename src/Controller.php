@@ -9,7 +9,8 @@ class Controller
 {
     public function __construct(
         private Docker $client,
-        private string $hostname = 'localhost'
+        private string $hostname = 'localhost',
+        private ?int $excludePort = null
     ) {
     }
 
@@ -45,10 +46,26 @@ class Controller
     protected function getContainerPublicPorts(ContainerSummary $container): array
     {
         $ports = array_map(function ($port) {
-            return $port->getPublicPort();
+            return intval($port->getPublicPort());
         }, $container->getPorts() ?? []);
 
-        $ports = array_filter(array_unique($ports));
+        $ports = array_unique($ports);
+
+        $ports = array_filter(
+            array_unique($ports),
+            function ($port) {
+                if ($port <= 0 || $port > 65535) {
+                    return false;
+                }
+
+                // Exclude the port if it matches the request port, to avoid linking to itself.
+                if ($this->excludePort !== null && $this->excludePort === $port) {
+                    return false;
+                }
+
+                return true;
+            }
+        );
         asort($ports);
 
         return $ports;

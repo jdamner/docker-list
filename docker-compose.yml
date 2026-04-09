@@ -1,8 +1,26 @@
 services:
+  docker-socket-proxy:
+    image: tecnativa/docker-socket-proxy:0.3.0
+    environment:
+      CONTAINERS: 1
+      INFO: 1
+      PING: 1
+      VERSION: 1
+      POST: 0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    tmpfs:
+      - /run
+    restart: unless-stopped
+
   docker-list:
-    image: ghcr.io/jdamner/docker-list:latest
+    image: ghcr.io/jdamner/docker-list:main
     ports:
       - 8080:8080
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      DOCKER_HOST: tcp://docker-socket-proxy:2375
+      HOSTNAME: server.local
+      EXCLUDE_PORT: 8080
+    depends_on:
+      - docker-socket-proxy
     restart: unless-stopped

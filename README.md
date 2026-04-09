@@ -13,64 +13,41 @@ When deployed alongside Docker, this service scans running containers and displa
 - Responsive card-based UI
 - Minimal dependencies
 
-## Prerequisites
-
-### Local Development
-- PHP 8.4+ with the built-in web server
-- Composer
-- Docker socket access (for reading container data)
-
-### Docker
-- Docker & Docker Compose
-
-## Local Setup
-
-1. **Install dependencies:**
-   ```bash
-   composer install
-   ```
-
-2. **Start the PHP server:**
-   ```bash
-   php -S 0.0.0.0:8080 index.php
-   ```
-
-3. **Access the UI:**
-   ```
-   http://localhost:8080
-   ```
-
-### Local Docker Access
-
-To connect to Docker locally when running the dev server, ensure the Docker socket is readable:
-```bash
-# Usually already set up by Docker Desktop/Engine installation
-ls -la /var/run/docker.sock
-```
-
-## Docker Deployment
+## Deployment
 
 ### With Docker Compose (Recommended)
 
-1. **Start the service:**
-   ```bash
-   docker compose up -d
-   ```
+A sample docker-compose for you, using a proxy for Docker socket to make things a tiny bit more secure:
 
-2. **Access at:**
-   ```
-   http://localhost:8080
-   ```
+```yaml
+services:
+  docker-socket-proxy:
+    image: tecnativa/docker-socket-proxy:0.3.0
+    environment:
+      CONTAINERS: 1
+      INFO: 1
+      PING: 1
+      VERSION: 1
+      POST: 0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    tmpfs:
+      - /run
+    restart: unless-stopped
 
-3. **View logs:**
-   ```bash
-   docker compose logs -f docker-list
-   ```
+  docker-list:
+    image: ghcr.io/jdamner/docker-list:main
+    ports:
+      - 80:8080
+    environment:
+      DOCKER_HOST: tcp://docker-socket-proxy:2375
+      HOSTNAME: server.local
+      EXCLUDE_PORT: 80
+    depends_on:
+      - docker-socket-proxy
+    restart: unless-stopped
+```
 
-4. **Stop the service:**
-   ```bash
-   docker compose down
-   ```
 
 ### Manual Docker Run
 
@@ -78,17 +55,6 @@ ls -la /var/run/docker.sock
 docker build -t docker-list .
 docker run --rm -p 8080:8080 -v /var/run/docker.sock:/var/run/docker.sock docker-list
 ```
-
-## Architecture
-
-- **Dockerfile**: Multi-stage build using Composer for dependency installation, PHP 8.4 Alpine for runtime
-- **index.php**: Main entry point; queries Docker API and renders HTML
-- **src/Docker.php**: Custom wrapper around the Docker PHP client
-
-## Dependencies
-
-- `beluga-php/docker-php` - Docker PHP bindings
-- `symfony/http-client` - HTTP client for Docker communication
 
 ## Security Notes
 
